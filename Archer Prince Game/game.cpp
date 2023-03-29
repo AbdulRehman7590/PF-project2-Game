@@ -183,41 +183,29 @@ int main()
     // Variables
     string option;
     srand(time(NULL));
-    bool checkbush = true;
+    
+    int score = 0, rightmove = 0, wallX = 0, wallY = 0, wallsize = 0, loadedArrow = 0;
+    int princehealth = 100, r1health = 100, r2health = 100, bomb = 0;
+    int R1fireCount = 0, R2fireCount = 0, UpfireCount = 0, DownfireCount = 0;
+    int arrowCount = 0, R1steps = 0, R2steps = 0, R2collision = 0, R1collision = 0;
+
     char fruit = 147;
-    int score = 0;
-    int rightmove = 0;
-    int wallX = 0;
-    int wallY = 0;
-    int wallsize = 0;
     char heart = 3;
-    int loadedArrow = 9;
+
+    bool checkbush = true;
     bool removeCharacter = false;
+    bool R1presence = false, R2presence = false;
     bool GameExit = true;
     bool isEnemy1Dead = false;
     bool isEnemy2Dead = false;
     bool isPrintstory = true;
-    int princehealth = 10;
-    int r1health = 10;
-    int r2health = 10;
-    int arrowCount = 0;
-    bool R1presence = true;
-    bool R2presence = true;
-    int R1steps = 0;
-    int R2steps = 0;
+    bool Move_to_stage3 = false;
+    bool isFire = true;
+
     string R1direction = "Up";
     string R2direction = "Down";
     string Up_enemy_direction = "Left";
     string Down_enemy_direction = "Right";
-    int R1fireCount = 0;
-    int R2fireCount = 0;
-    int UpfireCount = 0;
-    int DownfireCount = 0;
-    int R1collision = 0;
-    int R2collision = 0;
-    bool Move_to_stage3 = false;
-    bool isFire = true;
-    int bomb = 0;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -426,6 +414,7 @@ int main()
                 heroX = 3;
                 heroY = 24;
                 rightmove = 0;
+                updateSteps(rightmove);
                 arrowCount = 0;
                 R1Y = 20;
                 r1health = 200;
@@ -1160,7 +1149,7 @@ void createBombs(int &r2health, int &bomb, bool &R2presence)
     if ((r2health < 60 && bomb < 4) && R2presence == true)
     {
         int x = 0, y = 0;
-        x = 14 + rand() % 40;
+        x = 14 + rand() % 60;
         y = 16 + rand() % 10;
         gotoxy(x, y);
         setColor(4);
@@ -1273,7 +1262,7 @@ void collisionwithbush(char &fruit, bool &checkbush, int &arrowCount, int arrowX
     {
         if (checkbush == true)
         {
-            if (arrowX[x] == 40 && (arrowY[x] == 16 || arrowY[x] == 17 || arrowY[x] == 18))
+            if (arrowX[x] == 50 && (arrowY[x] == 16 || arrowY[x] == 17 || arrowY[x] == 18))
             {
                 removebush(fruit, checkbush);
             }
@@ -1459,7 +1448,6 @@ void heroRight(int &rightmove, int &score, char &fruit, int &princehealth, int &
         fruitscore(score);
         fruitrecoverhealth(princehealth);
         rightmove++;
-        updateSteps(rightmove);
     }
     else if (next1 == '<' || next2 == '<' || next3 == '<')
     {
@@ -1482,8 +1470,8 @@ void heroRight(int &rightmove, int &score, char &fruit, int &princehealth, int &
     if (rightmove >= 25)
     {
         rightmove = 25;
-        updateSteps(rightmove);
     }
+    updateSteps(rightmove);
 }
 void heroLeft(int &score, char &fruit, int &princehealth, int &heroX, int &heroY, char Hero[][5], int &bomb)
 {
@@ -2220,6 +2208,10 @@ void loadHeroCoordinate(int &heroX, int &heroY)
 }
 void updateHeroCoordinate(int heroX, int heroY)
 {
+    if (heroX >= 94)
+    {
+        heroX = 3;
+    }
     fstream heroCoordinates;
     heroCoordinates.open("HeroData.txt", ios::out);
     heroCoordinates << heroX << ",";
@@ -2308,7 +2300,7 @@ void loadSteps(int &rightmove)
     string line;
     fstream steps;
     steps.open("HeroSteps.txt", ios::in);
-    while(getline(steps, line))
+    while (getline(steps, line))
     {
         if (line != "")
         {
@@ -2320,7 +2312,7 @@ void loadSteps(int &rightmove)
 void updateSteps(int &rightmove)
 {
     fstream steps;
-    steps.open("HeroSteps", ios::out);
+    steps.open("HeroSteps.txt", ios::out);
     steps << rightmove;
     steps.close();
 }
